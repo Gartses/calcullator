@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Modern</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .calculator {
+            background-color: #222;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            width: 320px;
+        }
+
+        .display {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: right;
+            font-size: 2.5em;
+            font-weight: bold;
+            border-bottom: 1px solid #444;
+            box-sizing: border-box;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
+        .keys {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        button {
+            background-color: #444;
+            color: #fff;
+            border: none;
+            padding: 20px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .operator {
+            background-color: #ff9800;
+        }
+
+        .operator:hover {
+            background-color: #f57c00;
+        }
+
+        .equal {
+            background-color: #4caf50;
+            grid-column: span 1;
+        }
+
+        .equal:hover {
+            background-color: #43a047;
+        }
+
+        .clear {
+            background-color: #f44336;
+        }
+
+        .clear:hover {
+            background-color: #d32f2f;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+        <div class="keys">
+            <button class="operator clear" onclick="clearDisplay()">C</button>
+            <button class="operator" onclick="updateDisplay('%')">%</button>
+            <button class="operator" onclick="updateDisplay('√')">√</button>
+            <button class="operator" onclick="updateDisplay('/')">/</button>
+
+            <button onclick="updateDisplay('7')">7</button>
+            <button onclick="updateDisplay('8')">8</button>
+            <button onclick="updateDisplay('9')">9</button>
+            <button class="operator" onclick="updateDisplay('*')">*</button>
+
+            <button onclick="updateDisplay('4')">4</button>
+            <button onclick="updateDisplay('5')">5</button>
+            <button onclick="updateDisplay('6')">6</button>
+            <button class="operator" onclick="updateDisplay('-')">-</button>
+
+            <button onclick="updateDisplay('1')">1</button>
+            <button onclick="updateDisplay('2')">2</button>
+            <button onclick="updateDisplay('3')">3</button>
+            <button class="operator" onclick="updateDisplay('+')">+</button>
+
+            <button onclick="updateDisplay('0')">0</button>
+            <button onclick="updateDisplay('.')">.</button>
+            <button class="equal" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let currentInput = '';
+        let operator = null;
+        let firstOperand = null;
+
+        function updateDisplay(value) {
+            if (display.textContent === '0' && value !== '.') {
+                display.textContent = value;
+                currentInput = value;
+            } else {
+                display.textContent += value;
+                currentInput += value;
+            }
+        }
+
+        function clearDisplay() {
+            display.textContent = '0';
+            currentInput = '';
+            operator = null;
+            firstOperand = null;
+        }
+
+        function calculate() {
+            if (operator === null || firstOperand === null) return;
+
+            let secondOperand = parseFloat(currentInput);
+            let result;
+
+            switch (operator) {
+                case '+':
+                    result = firstOperand + secondOperand;
+                    break;
+                case '-':
+                    result = firstOperand - secondOperand;
+                    break;
+                case '*':
+                    result = firstOperand * secondOperand;
+                    break;
+                case '/':
+                    if (secondOperand === 0) {
+                        result = 'Error';
+                    } else {
+                        result = firstOperand / secondOperand;
+                    }
+                    break;
+                case '%':
+                    result = (firstOperand / 100) * secondOperand;
+                    break;
+                case '√':
+                    result = Math.sqrt(secondOperand);
+                    break;
+                default:
+                    return;
+            }
+
+            display.textContent = result;
+            currentInput = String(result);
+            operator = null;
+            firstOperand = null;
+        }
+
+        function updateDisplay(value) {
+            if (value === '√') {
+                if (!currentInput) return;
+                let num = parseFloat(currentInput);
+                display.textContent = Math.sqrt(num);
+                currentInput = String(Math.sqrt(num));
+                operator = null;
+                firstOperand = null;
+            } else if (['+', '-', '*', '/', '%'].includes(value)) {
+                if (currentInput === '') return;
+                if (firstOperand !== null) {
+                    calculate();
+                }
+                firstOperand = parseFloat(currentInput);
+                operator = value;
+                currentInput = '';
+                display.textContent = firstOperand + ' ' + operator;
+            } else {
+                if (display.textContent === '0' && value !== '.') {
+                    display.textContent = value;
+                    currentInput = value;
+                } else {
+                    display.textContent += value;
+                    currentInput += value;
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
